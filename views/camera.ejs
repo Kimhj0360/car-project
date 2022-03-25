@@ -15,10 +15,10 @@
 
     <h1 id="temphum" name="temphum">0</h1>
     <h1 id="handle" name="handle">stop</h1>
-    <button type="button" id="go_btn" name="go_btn" onclick="go();">go</button>
-    <button type="button" id="right_btn" name="right_btn" onclick="right();">right</button>
-    <button type="button" id="back_btn" name="back_btn" onclick="back();">back</button>
-    <button type="button" id="left_btn" name="left_btn" onclick="left();">left</button><br>
+    <button type="button" id="go_btn" name="go_btn">go</button>
+    <button type="button" id="right_btn" name="right_btn">right</button>
+    <button type="button" id="back_btn" name="back_btn">back</button>
+    <button type="button" id="left_btn" name="left_btn">left</button><br>
 
     <button type="button" id="save" onclick="">사진 캡처</button>
     <button type="button" id="temp" onclick="">온도측정</button>
@@ -33,50 +33,90 @@
         goEle.addEventListener('mouseup', function(event){
             isPressed = false;
             document.getElementById("handle").innerHTML = "stop";
-            window.location.href = "/stop";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/stop"
+                }
+            )
         })
         goEle.addEventListener('mousedown', function(event){
             isPressed = true;
             document.getElementById("handle").innerHTML = "go";
-            window.location.href = "/go";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/go"
+                }
+            )
         })
 
         rightEle.addEventListener('mouseup', function(event){
             isPressed = false;
             document.getElementById("handle").innerHTML = "stop";
-            window.location.href = "/stop";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/stop"
+                }
+            )
         })
         rightEle.addEventListener('mousedown', function(event){
             isPressed = true;
             document.getElementById("handle").innerHTML = "right";
-            window.location.href = "/right";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/right"
+                }
+            )
         })
 
         backEle.addEventListener('mouseup', function(event){
             isPressed = false;
             document.getElementById("handle").innerHTML = "stop";
-            window.location.href = "/stop";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/stop"
+                }
+            )
         })
         backEle.addEventListener('mousedown', function(event){
             isPressed = true;
             document.getElementById("handle").innerHTML = "back";
-            window.location.href = "/back";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/back"
+                }
+            )
         })
 
         leftEle.addEventListener('mouseup', function(event){
             isPressed = false;
             document.getElementById("handle").innerHTML = "stop";
-            window.location.href = "/stop";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/stop"
+                }
+            )
         })
         leftEle.addEventListener('mousedown', function(event){
             isPressed = true;
             document.getElementById("handle").innerHTML = "left";
-            window.location.href = "/left";
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"/left"
+                }
+            )
         })
     </script>
 
 
-    <script>
+    <!-- <script>
         // 비동기 post 방식으로 '/'호출 하여 데이터 받아서 제이쿼리로 반영하기.
         //시간별로 여러번 호출하는 함수는 setInterval();
         $(document).ready(function() {
@@ -93,16 +133,38 @@
             xmlHttp.open("GET", "/temphum", true); // true for asynchronous 
             xmlHttp.send(null);
         }
+    </script> -->
 
-
-        
+    <script>
+        $(document).ready(() =>{
+            $(document).ready(function() {
+            setInterval(function(){
+                $.ajax(
+                {
+                    type:"GET",
+                    url:"/temphum",
+                    data:{},
+                    dataType:"text",
+                    success:function(data){
+                        $("#temphum").html(data);
+                    },
+                    error:function(){
+                        alert('통신실패!');
+                    }
+                }
+            )
+            }, 1000);
+        });
+            
+        })        
     </script>
 
+    
      <script>
         $(function(){
             $("#save").click(function(){
                 html2canvas($('#camstreaming').get(0)).then(function(canvas) {
-                    document.getElementById('img').body.appendChild(canvas)
+                    document.getElementById('img').body.append(canvas)
                 });
             });
         });

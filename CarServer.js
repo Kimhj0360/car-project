@@ -150,6 +150,14 @@ app.post('/new', (req, res) => {
 });
 
 app.get('/temphum', (req, res) => {
+
+    console.log("temphum : " + msg+ " " + msh);
+    res.send("temp : " + msg + ", hum : " + msh);
+})
+
+app.post('/temphum', (req, res) => {
+    msg = req.body.msg;
+    msh = req.body.msh;
     console.log("temphum : " + msg+ " " + msh);
     res.send("temp : " + msg + ", hum : " + msh);
 })
