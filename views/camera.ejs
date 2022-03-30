@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>camera view</title>
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
-    <!-- <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script> -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
     <!-- http://192.168.0.207:8091/?action=snapshot -->
 </head>
 <body>
     <h1>camera</h1>
-    <img id="camstreaming" src="http://192.168.0.207:8091/?action=stream" alt="카메라가 꺼져있습니다."></img>
+    <!-- <div id="camstreaming" >
+        <img src="http://192.168.0.207:8091/?action=snapshot"></img>
+    </div> -->
+    <img src="http://192.168.0.207:8091/?action=stream" alt="카메라가 꺼져있습니다."></img>
     <input type="button" value="로그아웃" onclick="history.back();">
     <h1 id="temphum" name="temphum">0</h1>
     <h1 id="handle" name="handle">stop</h1>
@@ -158,11 +161,32 @@
             
         })        
     </script>
-     <script>
+     <!-- <script>
         $('#save').click(() => {
             img=document.createElement("img");
             img.src="http://192.168.0.207:8091/?action=snapshot";
             document.body.appendChild(img);
+        });
+    </script> -->
+    <script>
+        $(function(){
+            $("#save").on("click", function(){
+                html2canvas(document.querySelector("#camstreaming")).then(canvas => {
+                    saveAs(canvas.toDataURL('image/png'), "lime.png");
+                });
+            });
+            function saveAs(url, filename){
+                var link = document.createElement('a');
+                if(typeof link.download === 'string'){
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }else{
+                    window.open(url);
+                }
+            }
         });
     </script>
 </body>

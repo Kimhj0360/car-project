@@ -69,20 +69,44 @@ app.post('/login', (req, res) => {
     client.query('select * from userlist where userid=?', [userid], (err, data) => {
         // 로그인 확인
         if (data[0] == null) {
-            console.log('로그인 실패');
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write('<script>alert("로그인 불가. 아이디가 없습니다.")</script>');
-            res.write('<script>window.location="../"</script>');
-            res.end();
+          resultCode = 204;
+          message = '존재하지 않는 계정입니다.';
+          if (req.get('User-Agent').includes('okhttp')) {
+              res.json({
+                  'code': resultCode,
+                  'message': message
+              });
+          } else {
+              console.log('로그인 실패');
+              res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+              res.write('<script>alert("로그인 불가. 아이디가 없습니다.")</script>');
+              res.write('<script>window.location="../"</script>');
+              res.end();
+          }
         }
         else if (userid == data[0].userid && userpassword == data[0].userpassword) {
             console.log('로그인 성공');
+            resultCode = 200;
+            message = '로그인 성공! ' + data[0].username + '님 환영합니다!';
             // 세션에 추가
             req.session.is_logined = true;
             req.session.username = data.username;
             req.session.userid = data.userid;
             req.session.userpassword = data.userpassword;
-
+            
+            if (req.get('User-Agent').includes('okhttp')) {
+              res.json({
+                  'code': resultCode,
+                  'message': message
+              });
+            }else{
+              res.render('camera', { // 정보전달
+                username: data[0].username,
+                userid: data[0].userid,
+                userpassword: data[0].userpassword,
+                is_logined: true
+              });
+            }
             req.session.save(function () { // 세션 스토어에 적용하는 작업
                 res.render('camera', { // 정보전달
                     username: data[0].username,
@@ -93,13 +117,21 @@ app.post('/login', (req, res) => {
             });
             
         } else {
-            console.log('로그인 실패');
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write('<script>alert("로그인 불가. 아이디와 비밀번호를 다시 한번 확인해주세요!")</script>');
-            res.write('<script>window.location="../"</script>');
-            res.end();
+            resultCode = 204;
+            message = '다시 확인해주세요';
+            if (req.get('User-Agent').includes('okhttp')) {
+                res.json({
+                    'code': resultCode,
+                    'message': message
+                });
+            }else{
+              console.log('로그인 실패');
+              res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+              res.write('<script>alert("로그인 불가. 다시 확인해주세요.")</script>');
+              res.write('<script>window.location="../"</script>');
+              res.end();
+            }
 
-            res.render('login');
         }
     });
 
@@ -123,28 +155,57 @@ app.post('/new', (req, res) => {
 
     client.query('select * from userlist where userid=?', [userid], (err, data) => {
         if (username == "" || userpassword == "" || userphone == "") {
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write('<script>alert("모두 입력해주세요.")</script>');
-            res.write('<script>window.location="../"</script>');
-            res.end();
-
+            resultCode = 200;
+            message = '모두 입력해주세요.';
+            if (req.get('User-Agent').includes('okhttp')) {
+                res.json({
+                    'code': resultCode,
+                    'message': message
+                });
+            }else{
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.write('<script>alert("모두 입력해주세요.");</script>');
+                res.write('<script>window.location="../"</script>');
+                res.end();
+            }
         }
         else if (data.length == 0) {
             console.log('회원가입 성공');
             client.query('insert into userlist(username, userid, userpassword, userphone) values(?,?,?,?)', [
                 username, userid, userpassword, userphone
             ]);
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write('<script>alert("회원가입이 완료되었습니다!")</script>');
-            res.write('<script>window.location="../"</script>');
-            res.end();
+            resultCode = 200;
+            message = '회원가입에 성공했습니다.';
+            if (req.get('User-Agent').includes('okhttp')) {
+                res.json({
+                    'code': resultCode,
+                    'message': message
+                });
+            }
+            else {
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.write('<script>alert("회원가입이 완료되었습니다!")</script>');
+                res.write('<script>window.location="../"</script>');
+                res.end();
+            }
+            
         }
         else {
-            console.log('회원가입 실패');
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write('<script>alert("회원가입에 실패하였습니다. 다시 한번 확인해주세요!")</script>');
-            res.write('<script>window.location="../"</script>');
-            res.end();
+            resultCode = 200;
+            message = '회원가입에 실패하였습니다. 다시 한번 확인해주세요!';
+            if (req.get('User-Agent').includes('okhttp')) {
+                res.json({
+                    'code': resultCode,
+                    'message': message
+                });
+            } else {
+                console.log('회원가입 실패');
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.write('<script>alert("회원가입에 실패하였습니다. 다시 한번 확인해주세요!")</script>');
+                res.write('<script>window.location="../"</script>');
+                res.end();
+            }
+            
         }
     });
 });

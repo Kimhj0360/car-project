@@ -55,8 +55,13 @@
         </fieldset>
         <input type="submit" id="ok_btn" value="완료">
         <script type="text/javascript">
-            $("#check1").hide();
-            $("#check2").hide();
+            $(document).ready(function(){
+                $("#check1").hide();
+                $("#check2").hide();
+                $("#ok_btn").removeAttr("disabled");
+            })
+            // $("#check1").hide();
+            // $("#check2").hide();
             $("#user_password2").keyup(function(){
                 var pwd1 = $("#user_password").val();
                 var pwd2 = $("#user_password2").val();
